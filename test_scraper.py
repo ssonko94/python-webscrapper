@@ -101,15 +101,80 @@ def test_google_search_failure(mock_requests, name, args, want):
 
 
 @pytest.mark.parametrize(
-    "name, args, want",
+    "html, expected",
     [
         (
-            "success",
-            "<section><a>News</a><a>here</a><a>home</a></section>",
-            ["<a>home</a>", "<a>here</a>", "<a>News</a>"],
-        )
+            '<html><body><a href="https://www.google.com">Google</a><a href="https://www.amazon.com">Amazon</a></body></html>',
+            ["https://www.google.com", "https://www.amazon.com"],
+        ),
+        (
+            '<html><body><a href="https://www.facebook.com">Facebook</a></body></html>',
+            ["https://www.facebook.com"],
+        ),
+        (
+            '<html><body><a href="https://www.twitter.com">Twitter</a><p>Some text</p></body></html>',
+            ["https://www.twitter.com"],
+        ),
+        ("<html><body></body></html>", []),
+        (None, []),
     ],
 )
-def test_scrape_for_links(name, args, want):
-    got = scraper.scrape_for_links(args)
-    assert got == want, "{}: got: {}, want: {}".format(name, got, want)
+def test_scrape_for_links(html, expected):
+    assert scraper.scrape_for_links(html) == expected
+
+
+@pytest.mark.parametrize(
+    "links, expected",
+    [
+        (
+            [
+                "https://www.facebook.com/",
+                "https://www.linkedin.com/",
+                "https://www.youtube.com/",
+            ],
+            "https://www.facebook.com/",
+        ),
+        (
+            [
+                "https://www.google.com/",
+                "https://www.yahoo.com/",
+                "https://www.facebook.com/pages/123456789",
+            ],
+            "https://www.facebook.com/pages/123456789",
+        ),
+        (
+            [
+                "https://www.twitter.com/",
+                "https://www.instagram.com/",
+                "https://www.facebook.com/#123456789",
+            ],
+            "https://www.facebook.com/#123456789",
+        ),
+        ([], "No links to scrape"),
+        (
+            [
+                "https://www.google.com/",
+                "https://www.linkedin.com/",
+                "https://www.youtube.com/",
+            ],
+            "",
+        ),
+    ],
+)
+def test_find_facebook_link(links, expected):
+    assert scraper.find_facebook_link(links) == expected
+
+
+def test_trim_facebook_url():
+    assert (
+        scraper.trim_facebook_url("https://www.facebook.com/pages/123456789")
+        == "https://www.facebook.com/pages/123456789"
+    )
+    assert (
+        scraper.trim_facebook_url("https://www.facebook.com/#123456789")
+        == "https://www.facebook.com/#123456789"
+    )
+    assert (
+        scraper.trim_facebook_url("https://www.facebook.com/username")
+        == "https://www.facebook.com/username"
+    )

@@ -16,7 +16,9 @@ def generate_list_from_file_content(filename: str) -> Tuple[bool, str, list]:
         return False, f"No such file or directory: '{filename}'", []
 
 
-def google_search(param: str) -> Tuple[bool, str, Union[str, Any]]:
+def google_search(
+    param: str,
+) -> Tuple[bool, str, Union[str, Any]]:
     url = f"https://www.google.com/search?q={param}"
     try:
         response = requests.get(url)
@@ -33,17 +35,22 @@ def scrape_for_links(html: str) -> list:
     if html == None:
         return []
     soup = BeautifulSoup(html, "html.parser")
-    links = soup.find_all("a")
+    links = [
+        link.get("href") for link in soup.find_all("a") if link.get("href") is not None
+    ]
     return links
 
 
-def find_facebook_link(links: list, param) -> str:
+def find_facebook_link(links: list) -> str:
     facebook_link = ""
+    pattern = r"(?:(?:http|https):\/\/)?(?:www\.)?facebook\.com\/(?:(?:\w)*#!\/)?(?:pages\/)?([\w\-]*)?"
     if len(links) == 0:
         facebook_link = "No links to scrape"
     for link in links:
-        if re.search("https://www.facebook.com/", link["href"]):
-            facebook_link = f"https://www.facebook.com/{param}"
+        match = re.search(pattern, link)
+        if match:
+            facebook_link = trim_facebook_url(match.string)
+            return facebook_link
         else:
             facebook_link = ""
     return facebook_link
@@ -71,3 +78,38 @@ def find_email_address(html: str) -> Tuple[bool, str, str]:
         return True, "", email_links[0]
 
     return False, "no email found", ""
+
+
+def trim_facebook_url(link):
+    # Define the regular expression pattern to match the Facebook URL
+    pattern = r"/url\?q=(.*?)&"
+
+    # Find the match using the pattern
+    match = re.search(pattern, link)
+
+    # If a match is found, return the captured group, else return None
+    if match:
+        return match.group(1)
+    else:
+        return "no match found"
+
+
+def get_links(url):
+    # Send a GET request to the URL and get the content
+    response = requests.get(url)
+    content = response.content
+
+    # Parse the content using BeautifulSoup
+    soup = BeautifulSoup(content, "html.parser")
+
+    # Find all the <a> tags in the HTML and extract the links
+    links = []
+    for link in soup.find_all("a"):
+        href = link.get("href")
+        if href is not None:
+            links.append(href)
+
+    return links
+
+
+# Test the function with the provided URL
