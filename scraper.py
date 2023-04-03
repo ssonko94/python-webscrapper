@@ -19,7 +19,7 @@ def generate_list_from_file_content(filename: str) -> Tuple[bool, str, list]:
 def google_search(
     param: str,
 ) -> Tuple[bool, str, Union[str, Any]]:
-    url = f"https://www.google.com/search?q={param}"
+    url = f"https://www.google.com/search?q={param}&num=20"
     try:
         response = requests.get(url)
         return (
