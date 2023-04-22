@@ -14,12 +14,6 @@ def _mock_response(
     return mock_resp
 
 
-@pytest.fixture
-def mock_requests():
-    with patch("scraper.requests") as mock_requests:
-        yield mock_requests
-
-
 @pytest.mark.parametrize(
     "name, args, want",
     [
@@ -68,6 +62,7 @@ def test_find_email_adress(name, args, want):
     assert got == want, "{}: got: {}, want: {}".format(name, got, want)
 
 
+@patch("scraper.requests")
 @pytest.mark.parametrize(
     "name, args, want",
     [
@@ -79,47 +74,8 @@ def test_find_email_adress(name, args, want):
     ],
 )
 def test_google_search_success(mock_requests, name, args, want):
-    mock_response = MagicMock()
-    mock_response.content = "<h1>Hello from daily monitor</h1>"
+    mock_response = _mock_response(content="<h1>Hello from daily monitor</h1>")
     mock_requests.get.return_value = mock_response
-    got = scraper.google_search(args)
-    # Decode bytes to string before doing assertion
-    want = (want[0], want[1], want[2])
-    assert got == want, "{}: got: {}, want: {}".format(name, got, want)
-
-    # @patch("scraper.requests")
-    # @pytest.mark.parametrize(
-    #     "name, args, want",
-    #     [
-    #         (
-    #             "success",
-    #             "dailymonitor",
-    #             (True, "Request was successful", "<h1>Hello from daily monitor</h1>"),
-    #         )
-    #     ],
-    # )
-    # def test_google_search_success(mock_requests, name, args, want):
-    #     mock_response = _mock_response(content="<h1>Hello from daily monitor</h1>")
-    #     mock_requests.get.return_value = mock_response
-    #     got = scraper.google_search(args)
-    #     assert got == want, "{}: got: {}, want: {}".format(name, got, want)
-
-    # @patch("scraper.requests")
-    # @pytest.mark.parametrize(
-    #     "name, args, want",
-    #     [
-    #         (
-    #             "failure",
-    #             "",
-    #             (False, "failed to make get request: bad getway error", None),
-    #         ),
-    #     ],
-    # )
-    # def test_google_search_failure(mock_requests, name, args, want):
-    def mock_function(url):
-        raise Exception("bad getway error")
-
-    mock_requests.get = mock_function
     got = scraper.google_search(args)
     assert got == want, "{}: got: {}, want: {}".format(name, got, want)
 
