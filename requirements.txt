@@ -1,2 +1,6 @@
 beautifulsoup4==4.11.1
+
+
 pytest==7.1.2
+requests==2.27.1
+

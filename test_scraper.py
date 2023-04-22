@@ -1,4 +1,4 @@
-import scraper
+from . import scraper
 import pytest
 from unittest.mock import MagicMock, Mock, patch
 
