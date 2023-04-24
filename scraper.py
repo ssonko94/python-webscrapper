@@ -110,6 +110,3 @@ def get_links(url):
             links.append(href)
 
     return links
-
-
-# Test the function with the provided URL
