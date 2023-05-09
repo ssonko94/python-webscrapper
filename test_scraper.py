@@ -38,30 +38,6 @@ def test_generate_list_from_file_content(name, args, want):
     assert got == want, "{}: got: {}, want: {}".format(name, got, want)
 
 
-@pytest.mark.parametrize(
-    "name, args, want",
-    [
-        (
-            "success",
-            """<a  href="mailto:digital@ug.nationmedia.com" role="link" tabindex="0" target="_blank">digital@ug.nationmedia.com</a>""",
-            (
-                True,
-                "",
-                "digital@ug.nationmedia.com",
-            ),
-        ),
-        (
-            "faliure",
-            "",
-            (False, "no email found", ""),
-        ),
-    ],
-)
-def test_find_email_adress(name, args, want):
-    got = scraper.find_email_address(args)
-    assert got == want, "{}: got: {}, want: {}".format(name, got, want)
-
-
 @patch("scraper.requests")
 @pytest.mark.parametrize(
     "name, args, want",
@@ -103,6 +79,19 @@ def test_scrape_for_links(html, expected):
     assert scraper.scrape_for_links(html) == expected
 
 
+@pytest.mark.parametrize(
+    "links, expected_output",
+    [
+        ([], "No links to scrape"),
+        (["https://www.facebook.com", "https://www.twitter.com"], "facebook.com"),
+        (["https://www.google.com", "https://www.facebook.com"], "facebook.com"),
+        (["https://www.google.com", "https://www.youtube.com"], ""),
+    ],
+)
+def test_find_facebook_link(links, expected_output):
+    assert scraper.find_facebook_link(links) == expected_output
+
+
 @patch("scraper.requests")
 @pytest.mark.parametrize(
     "url, expected_output",
@@ -119,17 +108,28 @@ def test_get_facebook_about_page(mock_requests, url, expected_output):
     assert scraper.get_facebook_about_page(url) == expected_output
 
 
-# @pytest.mark.parametrize(
-#     "links, expected_output",
-#     [
-#         ([], "No links to scrape"),
-#         (["https://www.facebook.com", "https://www.twitter.com"], "facebook.com"),
-#         (["https://www.google.com", "https://www.facebook.com"], "facebook.com"),
-#         (["https://www.google.com", "https://www.youtube.com"], ""),
-#     ],
-# )
-# def test_find_facebook_link(links, expected_output):
-#     assert scraper.find_facebook_link(links) == expected_output
+@pytest.mark.parametrize(
+    "name, args, want",
+    [
+        (
+            "success",
+            """<a  href="mailto:digital@ug.nationmedia.com" role="link" tabindex="0" target="_blank">digital@ug.nationmedia.com</a>""",
+            (
+                True,
+                "",
+                "digital@ug.nationmedia.com",
+            ),
+        ),
+        (
+            "faliure",
+            "",
+            (False, "no email found", ""),
+        ),
+    ],
+)
+def test_find_email_adress(name, args, want):
+    got = scraper.find_email_address(args)
+    assert got == want, "{}: got: {}, want: {}".format(name, got, want)
 
 
 @pytest.mark.parametrize(

@@ -1,4 +1,4 @@
-name: github-actions-demo
+name: Run pytest unit tests
 on:
   push:
     branches: [fix/failing_unit_tests]
