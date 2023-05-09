@@ -6,18 +6,21 @@ if __name__ == "__main__":
         "./company_list.txt"
     )
 
-for company_name in company_names:  # type: ignore
-    (is_success, message, text) = scraper.google_search(company_name)  # type: ignore
-    if is_success:
-        links = scraper.scrape_for_links(text)
-        facebook_link = scraper.find_facebook_link(links)
-        facebook_html = scraper.get_facebook_about_page(facebook_link)
-        anchors = scraper.scrape_for_links(facebook_html)
-        print(anchors)
-        # (hasEmail, email_message, email_link) = scraper.find_email_address(
-        #     facebook_html
-        # )
-        # print(company_name, email_link)
+    # for company_name in company_names:  # type: ignore
+    #     (is_success, message, text) = scraper.google_search(company_name)  # type: ignore
+    #     if is_success:
+    #         links = scraper.scrape_for_links(text)
+    #         facebook_link = scraper.find_facebook_link(links)
+    #         facebook_html = scraper.get_facebook_about_page(facebook_link)
+    #         anchors = scraper.scrape_for_links(facebook_html)
+    #         print(anchors)
+
+    anchor = scraper.find_facebook_link(["https://www.facebook.com"])
+    print(anchor)
+    # (hasEmail, email_message, email_link) = scraper.find_email_address(
+    #     facebook_html
+    # )
+    # print(company_name, email_link)
 #     (hasFound, string, html) = scraper.google_search(facebook_link)
 #     anchors = scraper.scrape_for_links(html)
 # print(anchors)

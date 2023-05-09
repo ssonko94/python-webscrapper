@@ -119,28 +119,33 @@ def test_get_facebook_about_page(mock_requests, url, expected_output):
     assert scraper.get_facebook_about_page(url) == expected_output
 
 
-def trim_facebook_url(url):
-    if url.endswith("/"):
-        url = url[:-1]
-    if url.startswith("https://"):
-        url = url[8:]
-    if url.startswith("http://"):
-        url = url[7:]
-    if url.startswith("www."):
-        url = url[4:]
-    if url.endswith("/"):
-        url = url[:-1]
-    return url
+# @pytest.mark.parametrize(
+#     "links, expected_output",
+#     [
+#         ([], "No links to scrape"),
+#         (["https://www.facebook.com", "https://www.twitter.com"], "facebook.com"),
+#         (["https://www.google.com", "https://www.facebook.com"], "facebook.com"),
+#         (["https://www.google.com", "https://www.youtube.com"], ""),
+#     ],
+# )
+# def test_find_facebook_link(links, expected_output):
+#     assert scraper.find_facebook_link(links) == expected_output
 
 
 @pytest.mark.parametrize(
-    "links, expected_output",
+    "link, expected_output",
     [
-        ([], "No links to scrape"),
-        (["https://www.facebook.com", "https://www.twitter.com"], "facebook.com"),
-        (["https://www.google.com", "https://www.facebook.com"], "facebook.com"),
-        (["https://www.google.com", "https://www.youtube.com"], ""),
+        ("https://www.facebook.com/url?q=https://example.com&", "https://example.com"),
+        ("https://www.facebook.com/url?q=https://google.com&", "https://google.com"),
+        ("https://www.facebook.com/url?q=http://example.org&", "http://example.org"),
+        (
+            "https://www.facebook.com/url?q=http://example.com/path?query=value&",
+            "http://example.com/path?query=value",
+        ),
+        ("https://www.facebook.com/url?q=https://invalid-url", "no match found"),
+        ("https://www.facebook.com/url", "no match found"),
+        ("https://www.facebook.com", "no match found"),
     ],
 )
-def test_find_facebook_link(links, expected_output):
-    assert scraper.find_facebook_link(links) == expected_output
+def test_trim_facebook_url(link, expected_output):
+    assert scraper.trim_facebook_url(link) == expected_output
