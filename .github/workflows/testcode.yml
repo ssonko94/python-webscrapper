@@ -18,3 +18,8 @@ jobs:
       - name: Test with pytest
         run: |
           pytest
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          parallel: true
