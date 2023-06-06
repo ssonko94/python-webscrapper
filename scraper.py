@@ -49,7 +49,8 @@ def find_facebook_link(links: list) -> str:
     for link in links:
         match = re.search(pattern, link)
         if match:
-            facebook_link = trim_facebook_url(match.string)
+            matched_url = match.group(1)
+            facebook_link = trim_facebook_url(matched_url)
             return facebook_link
         else:
             facebook_link = ""
@@ -92,24 +93,3 @@ def trim_facebook_url(link):
         return match.group(1)
     else:
         return "no match found"
-
-
-def get_links(url):
-    # Send a GET request to the URL and get the content
-    response = requests.get(url)
-    content = response.content
-
-    # Parse the content using BeautifulSoup
-    soup = BeautifulSoup(content, "html.parser")
-
-    # Find all the <a> tags in the HTML and extract the links
-    links = []
-    for link in soup.find_all("a"):
-        href = link.get("href")
-        if href is not None:
-            links.append(href)
-
-    return links
-
-
-# Test the function with the provided URL

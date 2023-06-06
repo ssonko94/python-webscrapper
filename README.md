@@ -1,3 +1,5 @@
+[![Coverage Status](https://coveralls.io/repos/github/ssonko94/python-webscrapper/badge.svg?branch=fix/failing_unit_tests)](https://coveralls.io/github/ssonko94/python-webscrapper?branch=fix/failing_unit_tests)
+
 # python web scrapper
 
 This is a demo web scraping app built with python beautiful soup library.
@@ -15,10 +17,10 @@ In the end write to an output file the company name and corresponding email adre
 `Requirements:`
 
 > We are required to build this program using python `beatiful soup` for scrapping.
-
+>
 > We also need the `requests` library to send http request.
-
-> We are also required to write unit tests using the `pytest library`
+>
+> We are also required to write unit tests using the `pytest library`.
 
 ### SpecialThanks:
 
