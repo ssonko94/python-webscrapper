@@ -19,7 +19,6 @@ jobs:
         run: |
           pytest
       - name: Coveralls
-        uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          parallel: true
+        run: |
+          coverage run -m pytest ./test_scraper.py
+          COVERALLS_REPO_TOKEN=2PYh6crduYQxZZ1eOQ68wflSGGUXS2bIY coveralls

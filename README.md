@@ -1,3 +1,5 @@
+[![Coverage Status](https://coveralls.io/repos/github/ssonko94/python-webscrapper/badge.svg)](https://coveralls.io/github/ssonko94/python-webscrapper)
+
 # python web scrapper
 
 This is a demo web scraping app built with python beautiful soup library.
