@@ -20,5 +20,5 @@ jobs:
           pytest
       - name: Coveralls
         run: |
-          pytest --cov=./  
+          coverage report
           COVERALLS_REPO_TOKEN=2PYh6crduYQxZZ1eOQ68wflSGGUXS2bIY coveralls
