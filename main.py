@@ -1,31 +1,38 @@
 import scraper
 
 
-if __name__ == "__main__":
-    (hasFoundNames, confirm, company_names) = scraper.generate_list_from_file_content(
-        "./company_list.txt"
+def main():
+    input_file = "company_list.txt"
+    output_file = "emails.txt"
+
+    success, message, company_names = scraper.generate_list_from_file_content(
+        input_file
     )
 
-    # for company_name in company_names:  # type: ignore
-    #     (is_success, message, text) = scraper.google_search(company_name)  # type: ignore
-    #     if is_success:
-    #         links = scraper.scrape_for_links(text)
-    #         facebook_link = scraper.find_facebook_link(links)
-    #         facebook_html = scraper.get_facebook_about_page(facebook_link)
-    #         anchors = scraper.scrape_for_links(facebook_html)
-    #         print(anchors)
+    if success:
+        results = []
+        for company_name in company_names:
+            success, message, html = scraper.google_search(company_name)
 
-    anchor = scraper.find_facebook_link(["https://www.facebook.com"])
-    print(anchor)
-    # (hasEmail, email_message, email_link) = scraper.find_email_address(
-    #     facebook_html
-    # )
-    # print(company_name, email_link)
-#     (hasFound, string, html) = scraper.google_search(facebook_link)
-#     anchors = scraper.scrape_for_links(html)
-# print(anchors)
-# (has_email, success_message, email) = scraper.find_email_address(html)
-# print(email)
-# links = scraper.get_links("https://www.facebook.com/DailyMonitor/")
-# print(links)
-# trial_solution.main("./company_list.txt", "./company_email.txt")
+            if success:
+                links = scraper.scrape_for_links(html)
+                facebook_username = scraper.find_facebook_username(links)
+
+                if facebook_username:
+                    email = scraper.scrape_email_from_about_page(facebook_username)
+                else:
+                    email = "email not found"
+            else:
+                email = "email not found"
+
+            results.append(f"{company_name}: {email}")
+
+        with open(output_file, "w") as file:
+            file.write("\n".join(results))
+        print("Emails written to emails.txt")
+    else:
+        print(f"Error: {message}")
+
+
+if __name__ == "__main__":
+    main()
