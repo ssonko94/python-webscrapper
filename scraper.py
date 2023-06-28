@@ -1,8 +1,9 @@
-from types import UnionType
 import requests
 from bs4 import BeautifulSoup
-from typing import Any, List, Tuple, Union
+from typing import Any, Tuple, Union
 import re
+from selenium import webdriver
+from selenium.webdriver.common.by import By
 
 
 def generate_list_from_file_content(filename: str) -> Tuple[bool, str, list]:
@@ -41,55 +42,32 @@ def scrape_for_links(html: str) -> list:
     return links
 
 
-def find_facebook_link(links: list) -> str:
-    facebook_link = ""
-    pattern = r"(?:(?:http|https):\/\/)?(?:www\.)?facebook\.com\/(?:(?:\w)*#!\/)?(?:pages\/)?([\w\-]*)?"
-    if len(links) == 0:
-        facebook_link = "No links to scrape"
+def find_facebook_username(links) -> str | None:
+    pattern = (
+        r"(?i)\/url\?q=https:\/\/(?:www\.)?facebook\.com\/(?P<username>[a-zA-Z0-9.]*)"
+    )
     for link in links:
         match = re.search(pattern, link)
         if match:
-            matched_url = match.group(1)
-            facebook_link = trim_facebook_url(matched_url)
-            return facebook_link
-        else:
-            facebook_link = ""
-    return facebook_link
+            return match.group("username")
+    return None
 
 
-def get_facebook_about_page(url: str) -> str:
-    if url == "No links to scrape" or url == "":
-        return "couldnot find this page"
-    response = requests.get(url + "/about")
-    html_text = response.content
-    return str(html_text)
+def scrape_email_from_about_page(facebook_username) -> str:
+    if facebook_username == None:
+        return ""
+    url = f"https://www.facebook.com/{facebook_username}/about"
 
+    browser = webdriver.Firefox()
+    browser.get(url)
+    email = "no email found"
+    try:
+        email_element = browser.find_element(By.XPATH, '//span[contains(text(),"@")]')
+        if email_element:
+            email = email_element.text
 
-def find_email_address(html: str) -> Tuple[bool, str, str]:
-    # reg_email_pattern = "[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+"
-    if html == "couldnot find this page":
-        return False, "No email found", ""
-    soup = BeautifulSoup(html, "html.parser")
-    script = soup.get_text()
-    email_links: List[str] = re.findall(
-        r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,3}", script
-    )
-
-    if len(email_links) > 0:
-        return True, "", email_links[0]
-
-    return False, "no email found", ""
-
-
-def trim_facebook_url(link):
-    # Define the regular expression pattern to match the Facebook URL
-    pattern = r"/url\?q=(.*?)&"
-
-    # Find the match using the pattern
-    match = re.search(pattern, link)
-
-    # If a match is found, return the captured group, else return None
-    if match:
-        return match.group(1)
-    else:
-        return "no match found"
+    except:
+        return "no email found"
+    finally:
+        browser.quit()
+        return email
