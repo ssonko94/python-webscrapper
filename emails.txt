@@ -1,14 +1,9 @@
 daily monitor: digital@ug.nationmedia.com
-new vision: 
-bukedde: 
-jesa dairy farm: 
-apple: email not found
-nike: @nike
-adidas: 
-puma: 
-jordan: email not found
-microsoft: email not found
-samsung: 
-sony: email not found
-lg: email not found
-hisense: 
+Linode: no email found
+bukedde Uganda: no email found
+apple: no email found
+DStv: email not found
+Airtel Uganda: customerservice@ug.airtel.com
+Spear Motors Ltd: no email found
+Capital FM Uganda: socialmedia@capitalfm-ug.com
+lg: no email found
